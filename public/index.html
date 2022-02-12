@@ -1,20 +1,81 @@
-<div>
-  <textarea id="textarea" rows=2 cols=100 style="display: block;"></textarea>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bé học đánh vần, đọc chữ các kiểu</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="jumbotron">
+    <h1>Vietspellingbee</h1>
+    <p>Tập đọc tất cả các vần của tiếng Việt</p>
+  </div>
+
+
+  <div class="card bg-warning text-white">
+    <div class="card-body" id="score"> Điểm số: 0 </div>
+  </div>
+  
+
+  <div class="form-group">
+    <textarea class="form-control" id="textarea" rows=2 cols=100 style="display: block;"></textarea>
+  </div>
+
+  <div>
+  <button id="button" onclick="toggleStartStop()" style="display: none;"></button>
+  
+  <!-- <button onclick="show_word()">Show word</button> -->
+  
+  <div class="card">
+  </div>
+
+
+  <button class="btn btn-primary" onclick="start()">Bắt đầu nha</button>
+  </div>
+
+  <div class="card">
+  </div>
+
+
+  <div class="card bg-primary text-white">
+    <div class="card-body" style="font-size: 100pt !important; align-self: center !important;" id="word"> </div>
+  </div>
+  
+  <div class="card">
+  </div>
+
+  
+  <div class="card bg-secondary text-white">
+    <div class="card-body" id="result"> </div>
+  </div>
+  
+  <div class="card">
+  </div>
+
+  
+  <audio id="my-audio" controls style="display: none;">
+    <source src="assets/music1.mp3" type="audio/mpeg">
+  </audio>
 </div>
-<button id="button" onclick="toggleStartStop()"></button>
 
-<!-- <button onclick="show_word()">Show word</button> -->
-
-<button onclick="start()">Bắt đầu</button>
-
-<div style="font-size: 50; font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;" id="word"></div>
-<br><br><br>
-<div style="font-size: 30;" id="result"></div>
+</body>
+</html>
 
 
-<audio id="my-audio" controls style="display: none;">
-  <source src="assets/music1.mp3" type="audio/mpeg">
-</audio>
 
 <script type="text/javascript">
 
@@ -468,6 +529,7 @@ XEM THÊM Tổng quan thành phố Hạ Long, tỉnh Quảng Ninh năm 2021
 
   let list = words.split(', ')
   let currentWord = ''
+  let score = 0
 
   var recognizing;
   var recognition = new webkitSpeechRecognition();
@@ -481,13 +543,18 @@ XEM THÊM Tổng quan thành phố Hạ Long, tỉnh Quảng Ninh năm 2021
       if (event.results[i].isFinal) {
         textarea.value = event.results[i][0].transcript;
 
-        if (currentWord === event.results[i][0].transcript) {
+        if (currentWord.lower() === event.results[i][0].transcript.lower()) {
           document.querySelector('#result').innerHTML = "Đúng rồi"
+          score++
+          
+
         }
 
         else {
           document.querySelector('#result').innerHTML = "Sai rồi"
         }
+
+        document.querySelector('#score').innerHTML = "Điểm số: "+score
 
       }
     }
@@ -511,14 +578,14 @@ XEM THÊM Tổng quan thành phố Hạ Long, tỉnh Quảng Ninh năm 2021
 
   function text2speech(word) {
 
-    fetch('http://localhost:4000/text2speech/' + word)
+    fetch('../text2speech/' + word)
       .then(res => {
 
         music = `Voice_${word}.mp3`
 
         setTimeout(() => {
           cs_change_music(music)
-        }, 1000)
+        }, 2000)
         //console.log(music)
       })
 
@@ -526,7 +593,7 @@ XEM THÊM Tổng quan thành phố Hạ Long, tỉnh Quảng Ninh năm 2021
 
   function show_word() {
 
-    document.querySelector('#result').innerHTML = ''
+    document.querySelector('#result').innerHTML = 'Đọc từ này đi bé ơi!'
 
     document.querySelector('#textarea').value = ''
     let i = Math.floor(Math.random() * 5000);
@@ -538,6 +605,7 @@ XEM THÊM Tổng quan thành phố Hạ Long, tỉnh Quảng Ninh năm 2021
 
     setTimeout(() => {
       toggleStartStop()
+      document.querySelector('#result').innerHTML = 'Đang kiểm tra từ của bé đọc có đúng không...'
       text2speech(currentWord)
     }, 2000)
 
